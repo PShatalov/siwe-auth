@@ -51,7 +51,6 @@ export const EthereumAuth: React.FC = () => {
 
   async function signUpWithEthereum() {
     const signer = await provider.getSigner();
-    console.log(JSON.stringify(signer));
 
     const message = await createSiweMessage(
       signer.address,

@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Res, Request } from '@nestjs/common';
+import { Controller, Get, Inject, Post, Body } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { AppService } from './app.service';
 
@@ -13,8 +13,8 @@ export class AppController {
   getNonce() {
     return this.siweClient.send({ cmd: 'siwe_get_nonce' }, {});
   }
-  @Get('user/signup')
-  signUp(@Request() req) {
-    return this.userClient.send({ cmd: 'siwe_verify' }, { body: req.body });
+  @Post('user/signup')
+  signUp(@Body() body) {
+    return this.siweClient.send({ cmd: 'siwe_verify' }, body);
   }
 }
