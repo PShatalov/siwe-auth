@@ -1,4 +1,4 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get, Inject, Res, Request } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { AppService } from './app.service';
 
@@ -9,19 +9,12 @@ export class AppController {
     @Inject('SIWE') private readonly siweClient: ClientProxy,
   ) {}
 
-  @Get('hello-user')
-  helloUser() {
-    return this.userClient.send(
-      { cmd: 'hello_user' },
-      { message: 'test user' },
-    );
+  @Get('nonce')
+  getNonce() {
+    return this.siweClient.send({ cmd: 'siwe_get_nonce' }, {});
   }
-
-  @Get('hello-siwe')
-  helloSiwe() {
-    return this.siweClient.send(
-      { cmd: 'hello_siwe' },
-      { message: 'test siwe' },
-    );
+  @Get('user/signup')
+  signUp(@Request() req) {
+    return this.userClient.send({ cmd: 'siwe_verify' }, { body: req.body });
   }
 }

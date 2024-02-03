@@ -1,19 +1,17 @@
 import React, { useState } from "react";
-import { BrowserProvider, ExternalProvider } from "ethers";
+import { BrowserProvider } from "ethers";
 import { SiweMessage } from "siwe";
 
-const BACKEND_ADDR = "http://localhost:4000";
+const BACKEND_ADDR = "https://localhost:4000/api/v1";
 
 declare global {
   interface Window {
-    ethereum: ExternalProvider;
+    ethereum: BrowserProvider;
   }
 }
 
 export const EthereumAuth: React.FC = () => {
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
-  const [signature, setSignature] = useState<string>("");
 
   const provider = new BrowserProvider(window.ethereum);
 
@@ -21,7 +19,13 @@ export const EthereumAuth: React.FC = () => {
     address: string,
     statement: string
   ): Promise<string> {
-    const res = await fetch(`${BACKEND_ADDR}/nonce`);
+    const res = await fetch(`${BACKEND_ADDR}/nonce`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
     const nonce = await res.text();
     const siweMessage = new SiweMessage({
       domain: window.location.host,
@@ -45,26 +49,27 @@ export const EthereumAuth: React.FC = () => {
     }
   }
 
-  async function signInWithEthereum() {
-    const signer = provider.getSigner();
-    const address = await signer.getAddress();
-    const msg = await createSiweMessage(
-      address,
+  async function signUpWithEthereum() {
+    const signer = await provider.getSigner();
+    console.log(JSON.stringify(signer));
+
+    const message = await createSiweMessage(
+      signer.address,
       "Sign in with Ethereum to the app."
     );
-    setMessage(msg);
-    const sig = await signer.signMessage(msg);
-    setSignature(sig);
-  }
+    const signature = await signer.signMessage(message);
 
-  //   async function sendForVerification() {
-  //     const res = await fetch(`${BACKEND_ADDR}/verify`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ message, signature }),
-  //     });
-  //     console.log(await res.text());
-  //   }
+    const res = await fetch(`${BACKEND_ADDR}/user/signup`, {
+      mode: "cors",
+      method: "POST",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message, signature }),
+    });
+    return await res.json();
+  }
 
   return (
     <div>
@@ -73,10 +78,10 @@ export const EthereumAuth: React.FC = () => {
       )}
       <div className="button-container">
         {isWalletConnected && (
-          <button onClick={signInWithEthereum}>Sign In with Ethereum</button>
+          <button onClick={signUpWithEthereum}>Sign In with Ethereum</button>
         )}
         {isWalletConnected && (
-          <button onClick={signInWithEthereum}>Sign up with Ethereum</button>
+          <button onClick={signUpWithEthereum}>Sign up with Ethereum</button>
         )}
       </div>
     </div>

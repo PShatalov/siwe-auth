@@ -29,7 +29,6 @@ import { SiweModule } from './siwe/siwe.module';
       },
     ]),
     PasetoModule,
-    SiweModule,
   ],
   controllers: [AppController],
   providers: [AppService],
