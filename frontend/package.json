@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "buffer": "6.0.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "siwe": "2.1.4",
+    "ethers": "6.10.0",
+    "vite-plugin-mkcert": "^1.17.3",
+    "@rollup/plugin-inject": "5.0.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
@@ -23,7 +28,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8",
-    "vite-plugin-mkcert": "^1.17.3"
+    "vite": "^5.0.8"
   }
 }
