@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { SiweMessage, generateNonce } from 'siwe';
+import { RedisService } from 'src/siwe/redis.service';
 
 @Injectable()
 export class SiweService {
-  constructor() {}
+  constructor(private readonly redisService: RedisService) {}
 
   generateNonce() {
     return generateNonce();
@@ -16,9 +17,14 @@ export class SiweService {
     const signerAddress = await message.verify({
       signature,
     });
-    if (!signerAddress) {
+    const prevNonce = await this.redisService.get(signerAddress.data.address);
+    if (!signerAddress || prevNonce === signerAddress.data.nonce) {
       throw new Error('Verification Failed');
     }
+    await this.redisService.set(
+      signerAddress.data.address,
+      signerAddress.data.nonce,
+    );
     return JSON.stringify(signerAddress);
   }
 
