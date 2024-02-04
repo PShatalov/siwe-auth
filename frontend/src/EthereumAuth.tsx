@@ -17,7 +17,7 @@ type ModalProps = {
 };
 
 const Modal: React.FC = ({ isOpen, onClose, onSubmit }: ModalProps) => {
-  const [inputValue, setInputValue] = React.useState("");
+  const [inputValue, setInputValue] = useState("");
 
   if (!isOpen) return null;
 
@@ -29,7 +29,9 @@ const Modal: React.FC = ({ isOpen, onClose, onSubmit }: ModalProps) => {
         onChange={(e) => setInputValue(e.target.value)}
       />
       <button onClick={() => onSubmit(inputValue)}>Submit</button>
-      <button className="close-modal" onClick={onClose}>Close</button>
+      <button className="close-modal" onClick={onClose}>
+        Close
+      </button>
     </div>
   );
 };
@@ -96,9 +98,14 @@ export const EthereumAuth: React.FC = () => {
       body: JSON.stringify({ message, signature, username }),
     });
     const data = await res.json();
-    localStorage.setItem("user", JSON.stringify({ token: data.accessToken }));
 
-    window.location.href = "/profile";
+    if (res.ok) {
+      localStorage.setItem("user", JSON.stringify({ token: data.accessToken }));
+
+      window.location.href = "/profile";
+    } else {
+      alert(data.message);
+    }
   }
   async function signInWithEthereum() {
     const signer = await provider.getSigner();
@@ -119,10 +126,13 @@ export const EthereumAuth: React.FC = () => {
       body: JSON.stringify({ message, signature }),
     });
     const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem("user", JSON.stringify({ token: data.accessToken }));
 
-    localStorage.setItem("user", JSON.stringify({ token: data.accessToken }));
-
-    window.location.href = "/profile";
+      window.location.href = "/profile";
+    } else {
+      alert(data.message);
+    }
   }
   return (
     <div>

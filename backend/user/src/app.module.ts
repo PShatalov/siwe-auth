@@ -11,7 +11,7 @@ import { UsersModule } from './user/user.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'siwe2.sqlite',
+      database: 'siwe3.sqlite',
       entities: [User],
       synchronize: true,
     }),

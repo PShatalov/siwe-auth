@@ -1,5 +1,5 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { Controller, UnauthorizedException } from '@nestjs/common';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { SiweService } from './siwe/siwe.service';
 
 @Controller()
@@ -13,9 +13,15 @@ export class AppController {
 
   @MessagePattern({ cmd: 'siwe_verify' })
   async verify(data: { message: string; signature: string }): Promise<string> {
-    return await this.siweService.verifySiweMessage(
-      this.siweService.parseSiweMessage(data.message),
-      data.signature,
-    );
+    try {
+      return await this.siweService.verifySiweMessage(
+        this.siweService.parseSiweMessage(data.message),
+        data.signature,
+      );
+    } catch (err) {
+      throw new RpcException(
+        new UnauthorizedException('Unable to verify message'),
+      );
+    }
   }
 }

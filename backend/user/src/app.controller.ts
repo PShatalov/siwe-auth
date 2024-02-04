@@ -1,5 +1,5 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { Catch, Controller } from '@nestjs/common';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { User } from './user/user.entity';
 import { UserService } from './user/user.service';
 
@@ -9,17 +9,25 @@ export class AppController {
 
   @MessagePattern({ cmd: 'user_create' })
   async createUser(data: { username: string; address: string }): Promise<User> {
-    const { username, address } = data;
+    try {
+      const { username, address } = data;
 
-    return await this.userService.addNew({
-      username,
-      address,
-    });
+      return await this.userService.addNew({
+        username,
+        address,
+      });
+    } catch (err) {
+      throw new RpcException(err);
+    }
   }
 
   @MessagePattern({ cmd: 'user_profile' })
   async getUser(data: { address: string }): Promise<User> {
-    const { address } = data;
-    return await this.userService.getOneByddress(address);
+    try {
+      const { address } = data;
+      return await this.userService.getOneByddress(address);
+    } catch (err) {
+      throw new RpcException(err);
+    }
   }
 }

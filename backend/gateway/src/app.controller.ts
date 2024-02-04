@@ -7,7 +7,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
 import { lastValueFrom } from 'rxjs';
 import { AuthService } from 'src/auth/auth.service';
@@ -35,25 +35,32 @@ export class AppController {
 
   @Post('user/signup')
   async signUp(@Body() body) {
-    const { message, signature, username } = body;
-    const address = await this.verify({ message, signature });
+    try {
+      const { message, signature, username } = body;
+      const address = await this.verify({ message, signature });
 
-    const user = await lastValueFrom(
-      this.userClient.send({ cmd: 'user_create' }, { address, username }),
-    );
-
-    return this.authService.getToken(user);
+      const user = await lastValueFrom(
+        this.userClient.send({ cmd: 'user_create' }, { address, username }),
+      );
+      return this.authService.getToken(user);
+    } catch (err) {
+      throw new RpcException(err);
+    }
   }
 
   @Post('user/signin')
   async signIn(@Body() body: SignInDto) {
-    const address = await this.verify(body);
+    try {
+      const address = await this.verify(body);
 
-    const user = await lastValueFrom(
-      this.userClient.send({ cmd: 'user_profile' }, { address }),
-    );
+      const user = await lastValueFrom(
+        this.userClient.send({ cmd: 'user_profile' }, { address }),
+      );
 
-    return this.authService.getToken(user);
+      return this.authService.getToken(user);
+    } catch (err) {
+      throw new RpcException(err);
+    }
   }
 
   private async verify(data: {

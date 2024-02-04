@@ -8,22 +8,23 @@ const Profile: React.FC = () => {
   }>();
 
   const fetchProfile = async () => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const res = await fetch(`${BACKEND_ADDR}/user/profile`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-    if (!res.ok && res.status === 401) {
-      localStorage.removeItem("user");
-
-      window.location.href = "/";
-    } else {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const res = await fetch(`${BACKEND_ADDR}/user/profile`, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
       const data = await res.json();
       setUserData(data);
+    } catch (err) {
+      console.log(err);
+      localStorage.removeItem("user");
+      alert("Unauthorized. You will be redirected to home page");
+      window.location.href = "/";
     }
   };
   const logout = () => {

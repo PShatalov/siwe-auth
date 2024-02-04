@@ -4,6 +4,7 @@ import { HttpsOptions } from '@nestjs/common/interfaces/external/https-options.i
 
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { RpcExceptionFilter } from './common/filters/rpc-exception.filter';
 
 async function bootstrap() {
   const httpsOptions: HttpsOptions = {
@@ -20,6 +21,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalFilters(new RpcExceptionFilter());
   await app.listen(4000);
 }
 bootstrap();

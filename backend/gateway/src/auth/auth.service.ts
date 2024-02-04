@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 
@@ -13,7 +13,7 @@ export class AuthService {
     const user = await this.userService.getOneByddress(address);
 
     if (!user) {
-      return new Error('Unauthorized');
+      return new UnauthorizedException('Unauthorized');
     }
 
     return user;
