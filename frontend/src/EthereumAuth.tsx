@@ -1,40 +1,16 @@
 import React, { useState } from "react";
-import { BrowserProvider } from "ethers";
+import { BrowserProvider, Eip1193Provider } from "ethers";
 import { SiweMessage } from "siwe";
+
+import { SignUpModal } from "./SignUpModal";
 
 export const BACKEND_ADDR = "https://localhost:4000/api/v1";
 
 declare global {
   interface Window {
-    ethereum: BrowserProvider;
+    ethereum: Eip1193Provider;
   }
 }
-
-type ModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (inputValue: string) => void;
-};
-
-const Modal: React.FC = ({ isOpen, onClose, onSubmit }: ModalProps) => {
-  const [inputValue, setInputValue] = useState("");
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="signup-modal">
-      <input
-        type="text"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-      />
-      <button onClick={() => onSubmit(inputValue)}>Submit</button>
-      <button className="close-modal" onClick={onClose}>
-        Close
-      </button>
-    </div>
-  );
-};
 
 export const EthereumAuth: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -63,7 +39,7 @@ export const EthereumAuth: React.FC = () => {
       statement,
       uri: window.location.origin,
       version: "1",
-      chainId: "1",
+      chainId: 1,
       nonce,
     });
     return siweMessage.prepareMessage();
@@ -145,8 +121,9 @@ export const EthereumAuth: React.FC = () => {
         )}
         {isWalletConnected && (
           <>
+            <button onClick={signInWithEthereum}>Sign In with Ethereum</button>
             <button onClick={handleOpenModal}>Sign up with Ethereum</button>
-            <Modal
+            <SignUpModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
               onSubmit={signUpWithEthereum}
