@@ -10,11 +10,9 @@ export class AuthService {
   ) {}
 
   async validateUser(address: string): Promise<any> {
-    console.log(address, '???????')
     const user = await this.userService.getOneByAddress(address);
 
     if (!user) {
-      console.log(user, address, process.env.DB_PATH, 'HERE USER222?????');
       throw new UnauthorizedException('Unauthorized');
     }
 

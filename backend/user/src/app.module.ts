@@ -6,7 +6,6 @@ import { AppController } from './app.controller';
 import { User } from './user/user.entity';
 import { UsersModule } from './user/user.module';
 
-console.log(process.env.DB_PATH, 'DB+PATH????')
 @Module({
   imports: [
     ConfigModule.forRoot(),

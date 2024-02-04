@@ -12,7 +12,7 @@ export class RpcExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const error = exception.getError();
-    console.log(error, 'ERROR HERE???')
+
     if (error['code']?.includes('SQLITE_CONSTRAINT')) {
       response.status(HttpStatus.CONFLICT).json({
         statusCode: HttpStatus.CONFLICT,
