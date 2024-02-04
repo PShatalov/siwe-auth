@@ -12,7 +12,7 @@ Demo - https://drive.google.com/file/d/1aGV7TUJFxTYV1-EhuP05_ZsY_KKr4VL5/view?us
 
 ## Diagram
 
-![App architecture](https://drive.google.com/file/d/1gDkvwi8ygIVn_FabL0V60_EL1aR3noNy/view?usp=sharing "App architecture")
+![App architecture](/diagram.png)
 
 ## Next steps
 
