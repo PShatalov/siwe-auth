@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { RedisService } from './redis.service';
-import { SiweAuthGuard } from './siwe-auth.guard';
+import { RedisModule } from 'src/redis/redis.module';
 import { SiweService } from './siwe.service';
 
 @Module({
-  imports: [],
-  providers: [SiweService, SiweAuthGuard, RedisService],
+  imports: [RedisModule],
+  providers: [SiweService],
+  exports: [SiweService],
 })
 export class SiweModule {}

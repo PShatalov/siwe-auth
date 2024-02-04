@@ -69,7 +69,26 @@ export const EthereumAuth: React.FC = () => {
     });
     return await res.json();
   }
+  async function signInWithEthereum() {
+    const signer = await provider.getSigner();
 
+    const message = await createSiweMessage(
+      signer.address,
+      "Sign in with Ethereum to the app."
+    );
+    const signature = await signer.signMessage(message);
+
+    const res = await fetch(`${BACKEND_ADDR}/user/signin`, {
+      mode: "cors",
+      method: "POST",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message, signature }),
+    });
+    return await res.json();
+  }
   return (
     <div>
       {!isWalletConnected && (
@@ -77,7 +96,7 @@ export const EthereumAuth: React.FC = () => {
       )}
       <div className="button-container">
         {isWalletConnected && (
-          <button onClick={signUpWithEthereum}>Sign In with Ethereum</button>
+          <button onClick={signInWithEthereum}>Sign In with Ethereum</button>
         )}
         {isWalletConnected && (
           <button onClick={signUpWithEthereum}>Sign up with Ethereum</button>

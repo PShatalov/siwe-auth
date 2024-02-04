@@ -3,9 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PasetoModule } from './paseto/paseto.module';
-import { SiweModule } from './siwe/siwe.module';
 
 @Module({
   imports: [
@@ -28,9 +25,8 @@ import { SiweModule } from './siwe/siwe.module';
         },
       },
     ]),
-    PasetoModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}

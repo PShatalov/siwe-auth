@@ -1,6 +1,6 @@
 import { Controller, Get, Inject, Post, Body } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { AppService } from './app.service';
+import { lastValueFrom } from 'rxjs';
 
 @Controller('api/v1')
 export class AppController {
@@ -13,8 +13,25 @@ export class AppController {
   getNonce() {
     return this.siweClient.send({ cmd: 'siwe_get_nonce' }, {});
   }
+
   @Post('user/signup')
-  signUp(@Body() body) {
-    return this.siweClient.send({ cmd: 'siwe_verify' }, body);
+  async signUp(@Body() body) {
+    const address = await lastValueFrom(
+      this.siweClient.send({ cmd: 'siwe_verify' }, body),
+    );
+
+    return this.userClient.send(
+      { cmd: 'user_create' },
+      { address, username: 'test' },
+    );
+  }
+
+  @Post('user/signin')
+  async signIn(@Body() body) {
+    const address = await lastValueFrom(
+      this.siweClient.send({ cmd: 'siwe_verify' }, body),
+    );
+
+    return this.userClient.send({ cmd: 'user_profile' }, { address });
   }
 }

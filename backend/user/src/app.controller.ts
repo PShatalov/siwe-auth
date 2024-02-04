@@ -1,14 +1,25 @@
-import { Controller, Get } from '@nestjs/common';
-import { EventPattern, MessagePattern } from '@nestjs/microservices';
-import { AppService } from './app.service';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
+import { User } from './user/user.entity';
+import { UserService } from './user/user.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly userService: UserService) {}
 
-  @MessagePattern({ cmd: 'hello_user' })
-  getHello(data: any): string {
-    console.log('hello_user event handled', JSON.stringify(data));
-    return 'Hello from user';
+  @MessagePattern({ cmd: 'user_create' })
+  async createUser(data: { username: string; address: string }): Promise<User> {
+    const { username, address } = data;
+    console.log(username, address);
+    return await this.userService.addNew({
+      username,
+      address,
+    });
+  }
+
+  @MessagePattern({ cmd: 'user_profile' })
+  async getUser(data: { address: string }): Promise<User> {
+    const { address } = data;
+    return await this.userService.getOneByddress(address);
   }
 }

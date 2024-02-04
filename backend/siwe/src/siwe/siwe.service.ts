@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SiweMessage, generateNonce } from 'siwe';
-import { RedisService } from 'src/siwe/redis.service';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class SiweService {
@@ -14,18 +14,20 @@ export class SiweService {
     message: SiweMessage,
     signature: string,
   ): Promise<string> {
-    const signerAddress = await message.verify({
+    const verificationResult = await message.verify({
       signature,
     });
-    const prevNonce = await this.redisService.get(signerAddress.data.address);
-    if (!signerAddress || prevNonce === signerAddress.data.nonce) {
+    const data = verificationResult.data;
+
+    const prevNonce = await this.redisService.get(data.address);
+
+    if (!verificationResult || prevNonce === data.nonce) {
       throw new Error('Verification Failed');
     }
-    await this.redisService.set(
-      signerAddress.data.address,
-      signerAddress.data.nonce,
-    );
-    return JSON.stringify(signerAddress);
+
+    await this.redisService.set(data.address, data.nonce);
+
+    return data.address;
   }
 
   parseSiweMessage(message: string): SiweMessage {
