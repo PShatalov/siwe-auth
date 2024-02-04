@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BrowserProvider } from "ethers";
 import { SiweMessage } from "siwe";
 
-const BACKEND_ADDR = "https://localhost:4000/api/v1";
+export const BACKEND_ADDR = "https://localhost:4000/api/v1";
 
 declare global {
   interface Window {
@@ -10,8 +10,36 @@ declare global {
   }
 }
 
+type ModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (inputValue: string) => void;
+};
+
+const Modal: React.FC = ({ isOpen, onClose, onSubmit }: ModalProps) => {
+  const [inputValue, setInputValue] = React.useState("");
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="signup-modal">
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+      />
+      <button onClick={() => onSubmit(inputValue)}>Submit</button>
+      <button className="close-modal" onClick={onClose}>Close</button>
+    </div>
+  );
+};
+
 export const EthereumAuth: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   const provider = new BrowserProvider(window.ethereum);
 
@@ -49,7 +77,7 @@ export const EthereumAuth: React.FC = () => {
     }
   }
 
-  async function signUpWithEthereum() {
+  async function signUpWithEthereum(username: string) {
     const signer = await provider.getSigner();
 
     const message = await createSiweMessage(
@@ -65,9 +93,12 @@ export const EthereumAuth: React.FC = () => {
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message, signature }),
+      body: JSON.stringify({ message, signature, username }),
     });
-    return await res.json();
+    const data = await res.json();
+    localStorage.setItem("user", JSON.stringify({ token: data.accessToken }));
+
+    window.location.href = "/profile";
   }
   async function signInWithEthereum() {
     const signer = await provider.getSigner();
@@ -87,7 +118,11 @@ export const EthereumAuth: React.FC = () => {
       },
       body: JSON.stringify({ message, signature }),
     });
-    return await res.json();
+    const data = await res.json();
+
+    localStorage.setItem("user", JSON.stringify({ token: data.accessToken }));
+
+    window.location.href = "/profile";
   }
   return (
     <div>
@@ -99,7 +134,14 @@ export const EthereumAuth: React.FC = () => {
           <button onClick={signInWithEthereum}>Sign In with Ethereum</button>
         )}
         {isWalletConnected && (
-          <button onClick={signUpWithEthereum}>Sign up with Ethereum</button>
+          <>
+            <button onClick={handleOpenModal}>Sign up with Ethereum</button>
+            <Modal
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              onSubmit={signUpWithEthereum}
+            />
+          </>
         )}
       </div>
     </div>

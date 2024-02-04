@@ -1,10 +1,22 @@
-import { Controller, Get, Inject, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { AuthGuard } from '@nestjs/passport';
 import { lastValueFrom } from 'rxjs';
+import { AuthService } from 'src/auth/auth.service';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Controller('api/v1')
 export class AppController {
   constructor(
+    private readonly authService: AuthService,
     @Inject('USER') private readonly userClient: ClientProxy,
     @Inject('SIWE') private readonly siweClient: ClientProxy,
   ) {}
@@ -14,24 +26,42 @@ export class AppController {
     return this.siweClient.send({ cmd: 'siwe_get_nonce' }, {});
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('user/profile')
+  getProtectedResource(@Request() req) {
+    const { address } = req.user;
+    return this.userClient.send({ cmd: 'user_profile' }, { address });
+  }
+
   @Post('user/signup')
   async signUp(@Body() body) {
-    const address = await lastValueFrom(
-      this.siweClient.send({ cmd: 'siwe_verify' }, body),
+    const { message, signature, username } = body;
+    const address = await this.verify({ message, signature });
+
+    const user = await lastValueFrom(
+      this.userClient.send({ cmd: 'user_create' }, { address, username }),
     );
 
-    return this.userClient.send(
-      { cmd: 'user_create' },
-      { address, username: 'test' },
-    );
+    return this.authService.getToken(user);
   }
 
   @Post('user/signin')
-  async signIn(@Body() body) {
-    const address = await lastValueFrom(
-      this.siweClient.send({ cmd: 'siwe_verify' }, body),
+  async signIn(@Body() body: SignInDto) {
+    const address = await this.verify(body);
+
+    const user = await lastValueFrom(
+      this.userClient.send({ cmd: 'user_profile' }, { address }),
     );
 
-    return this.userClient.send({ cmd: 'user_profile' }, { address });
+    return this.authService.getToken(user);
+  }
+
+  private async verify(data: {
+    message: string;
+    signature: string;
+  }): Promise<string> {
+    return await lastValueFrom(
+      this.siweClient.send({ cmd: 'siwe_verify' }, data),
+    );
   }
 }

@@ -10,7 +10,7 @@ export class AppController {
   @MessagePattern({ cmd: 'user_create' })
   async createUser(data: { username: string; address: string }): Promise<User> {
     const { username, address } = data;
-    console.log(username, address);
+
     return await this.userService.addNew({
       username,
       address,
