@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { BrowserProvider, Eip1193Provider } from "ethers";
 import { SiweMessage } from "siwe";
-
 import { SignUpModal } from "./SignUpModal";
 
 export const BACKEND_ADDR = "https://localhost:4000/api/v1";
@@ -121,7 +120,6 @@ export const EthereumAuth: React.FC = () => {
         )}
         {isWalletConnected && (
           <>
-            <button onClick={signInWithEthereum}>Sign In with Ethereum</button>
             <button onClick={handleOpenModal}>Sign up with Ethereum</button>
             <SignUpModal
               isOpen={isModalOpen}

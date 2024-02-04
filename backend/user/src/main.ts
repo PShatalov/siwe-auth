@@ -7,11 +7,11 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: {
-      port: 6379,
-      host: 'localhost',
+      port: Number(process.env.REDIS_PORT),
+      host: process.env.REDIS_HOST,
     },
   });
   await app.startAllMicroservices();
-  await app.listen(4001);
+  await app.listen(process.env.PORT);
 }
 bootstrap();

@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:      
+  gateway:
+    build:
+      context: ./backend/gateway
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - JWT_SECRET=myJwtSecret
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_PATH=/data/app-db.sqlite
+      - PORT=4000
+    volumes:
+      - db-data:/data
+    depends_on:
+      - siwe
+      - user
+      - redis
+
+  user:
+    build:
+      context: ./backend/user
+      dockerfile: Dockerfile
+    ports:
+      - "4001:4001"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_PATH=/data/app-db.sqlite
+      - PORT=4001
+    volumes:
+      - db-data:/data
+    depends_on:
+      - redis
+
+  siwe:
+    build:
+      context: ./backend/siwe
+      dockerfile: Dockerfile
+    ports:
+      - "4002:4002"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PORT=4002
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+volumes:
+  db-data:
+
+networks:
+  default:
+    driver: bridge

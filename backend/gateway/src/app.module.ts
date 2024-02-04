@@ -12,7 +12,7 @@ import { User } from './user/user.entity';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'siwe3.sqlite',
+      database: process.env.DB_PATH,
       entities: [User],
       synchronize: true,
     }),
@@ -21,16 +21,16 @@ import { User } from './user/user.entity';
         name: 'USER',
         transport: Transport.REDIS,
         options: {
-          host: 'localhost',
-          port: 6379,
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
         },
       },
       {
         name: 'SIWE',
         transport: Transport.REDIS,
         options: {
-          host: 'localhost',
-          port: 6379,
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
         },
       },
     ]),

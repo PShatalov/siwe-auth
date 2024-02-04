@@ -13,8 +13,15 @@ export class UserService {
 
   async addNew(user: UserDTO): Promise<User> {
     const newUser = this.userRepository.create(user);
-
-    return await this.userRepository.save(newUser);
+    const userObj = await this.userRepository.save(newUser);
+    console.log(
+      process.env.DB_PATH,
+      user.address,
+      await this.userRepository.findOne({
+        where: { address: user.address },
+      }),
+    );
+    return userObj;
   }
 
   async getOneByAddress(address: string): Promise<User> {

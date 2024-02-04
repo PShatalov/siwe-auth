@@ -22,6 +22,6 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new RpcExceptionFilter());
-  await app.listen(4000);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
