@@ -4,7 +4,7 @@
 2. Install docker
 3. Make sure you have Metamask plugin
 4. Allow insecure localhost - chrome://flags/#allow-insecure-localhost
-5. Launch backend - "docker-compose" up from the root folder
+5. Launch backend - "docker-compose up" from the root folder
 6. Launch frontend - "cd ./frontend && yarn && yarn start:dev"
 7. Open https://localhost:5173/
 
