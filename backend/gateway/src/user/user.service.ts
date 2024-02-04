@@ -10,7 +10,7 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  async getOneByddress(address: string): Promise<User> {
+  async getOneByAddress(address: string): Promise<User> {
     return this.userRepository.findOne({ where: { address } });
   }
 }

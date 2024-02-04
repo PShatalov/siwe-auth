@@ -25,7 +25,7 @@ export class AppController {
   async getUser(data: { address: string }): Promise<User> {
     try {
       const { address } = data;
-      return await this.userService.getOneByddress(address);
+      return await this.userService.getOneByAddress(address);
     } catch (err) {
       throw new RpcException(err);
     }

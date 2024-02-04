@@ -17,7 +17,7 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  async getOneByddress(address: string): Promise<User> {
+  async getOneByAddress(address: string): Promise<User> {
     return this.userRepository.findOneOrFail({ where: { address } });
   }
 }

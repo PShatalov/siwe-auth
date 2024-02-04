@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SiweMessage, generateNonce } from 'siwe';
-import { RedisService } from 'src/redis/redis.service';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class SiweService {
