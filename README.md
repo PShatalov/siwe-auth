@@ -8,8 +8,6 @@
 6. Launch frontend - "cd ./frontend && yarn && yarn start:dev"
 7. Open https://localhost:5173/
 
-Demo - https://drive.google.com/file/d/1aGV7TUJFxTYV1-EhuP05_ZsY_KKr4VL5/view?usp=sharing
-
 ## Diagram
 
 ![App architecture](/diagram.png)
